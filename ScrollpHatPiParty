@@ -1,0 +1,46 @@
+#!/usr/bin/env python
+
+import sys
+import time
+
+import scrollphat
+import time
+
+try:
+    from tweepy import Stream, OAuthHandler
+    from tweepy.streaming import StreamListener
+except ImportError:
+    exit("This script requires the tweepy module\nInstall with: sudo pip install tweepy")
+
+
+ckey = '' # Consumer key
+csecret = '' # Consumer secret
+atoken = '' # Access token
+asecret = '' # Access secret
+
+class listener(StreamListener):
+    def on_data(self, data):
+        say_hello()
+        return True
+
+    def on_error(self, status):
+        print (status)
+
+def say_hello():
+    scrollphat.set_brightness(2)
+
+    scrollphat.write_string("PI PARTY!", 11)
+    length = scrollphat.buffer_len()
+
+    for i in range(length):
+        try:
+            scrollphat.scroll()
+            time.sleep(0.1)
+        except KeyboardInterrupt:
+            scrollphat.clear()
+            
+
+auth = OAuthHandler(ckey, csecret)
+auth.set_access_token(atoken, asecret)
+twitterstream = Stream(auth, listener())
+twitterstream.filter(track=['#PiParty'])
